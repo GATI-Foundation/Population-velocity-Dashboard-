@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GATI — United Kingdom Country Dashboard</title>
+<meta name="description" content="GATI United Kingdom Country Dashboard — Indian population, long-term migration, visas, work visas and India-trained nurses and doctors, from ONS, Home Office, OECD and NMC statistics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --teal:#006B76;
+  --teal-dark:#00333A;
+  --teal-light:#84D2E2;
+  --gold:#E5A812;
+  --gold-light:#FFCC4E;
+  --gold-dark:#8C6A1F;
+  --gray:#839097;
+  --gray-light:#D8E2E7;
+  --black:#000000;
+  --white:#FFFFFF;
+  --bg:#F6F9FA;
+  --card-border:#E1E9EB;
+  --font:'Poppins',sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--font);background:var(--bg);color:#1A2327;}
+h1,h2,h3{font-family:var(--font);margin:0;}
+p{margin:0;}
+a{color:inherit;}
+
+/* ---------- Site Header ---------- */
+.site-header{
+  background:var(--white);height:84px;display:flex;align-items:center;
+  padding:0 40px 0 32px;gap:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);position:relative;z-index:10;
+}
+.site-header-logo{height:70px;width:auto;display:block;flex-shrink:0;}
+.site-header-title{
+  font-family:var(--font);font-weight:700;font-size:28px;color:var(--teal);
+  letter-spacing:normal;line-height:1.2;white-space:nowrap;
+}
+
+/* ---------- Country Nav ---------- */
+.country-nav{position:relative;margin-left:auto;}
+.country-nav-btn{
+  background:var(--teal);color:var(--white);border:none;
+  padding:9px 20px;border-radius:8px;font-family:var(--font);
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:background .15s;display:flex;align-items:center;gap:6px;
+}
+.country-nav-btn:hover{background:#00828F;}
+.country-nav-btn::after{content:'▾';font-size:10px;margin-left:2px;}
+.country-nav-menu{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--white);border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);min-width:220px;
+  padding:6px;z-index:100;border:1px solid var(--card-border);
+}
+.country-nav.open .country-nav-menu{display:block;}
+.country-nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:8px;text-decoration:none;color:#1A2327;
+  font-size:13.5px;font-weight:500;font-family:var(--font);transition:background .1s;
+}
+.country-nav-item:hover{background:#F0F8F9;}
+.country-nav-item.active{background:var(--teal);color:var(--white);}
+.country-flag{font-size:18px;line-height:1;}
+
+/* ---------- Hero ---------- */
+.topbar{background:var(--teal);color:var(--white);padding:22px 40px 24px;display:flex;align-items:center;gap:18px;}
+.hero-flag{font-size:44px;line-height:1;}
+.hero-text h1{font-size:28px;font-weight:800;margin-bottom:4px;}
+.hero-text .subtitle{font-size:14px;color:#CFE9EC;max-width:760px;line-height:1.5;}
+
+/* ---------- Executive KPI Strip ---------- */
+.exec-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  padding:22px 40px 6px;
+}
+.exec-card{
+  background:var(--white);border:1px solid var(--card-border);
+  border-top:3px solid var(--gold);border-radius:10px;padding:20px 22px;
+}
+.exec-card-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.exec-card-title{
+  font-size:12px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.4px;
+}
+.exec-card-period{font-size:11px;color:var(--gray);font-weight:600;}
+.exec-primary{display:flex;align-items:baseline;gap:12px;margin-bottom:4px;}
+.exec-primary-value{font-size:26px;font-weight:800;color:var(--teal-dark);line-height:1.1;}
+.exec-primary-label{font-size:10.5px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.exec-cagr{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#E8F5E9;color:#2E7D32;font-size:11.5px;font-weight:700;
+  padding:3px 10px;border-radius:12px;
+}
+.exec-cagr.negative{background:#FFEBEE;color:#C62828;}
+.exec-cagr-period{
+  display:inline-flex;align-items:center;
+  background:#F6F9FA;color:var(--gray);border:1px solid var(--card-border);
+  font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:12px;
+}
+.exec-cagr-wrap{display:flex;gap:8px;margin-bottom:14px;}
+.exec-secondary{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding-top:12px;border-top:1px solid var(--card-border);
+}
+.exec-metric-label{font-size:10px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.exec-metric-value{font-size:15px;font-weight:700;color:var(--teal-dark);margin-top:2px;}
+
+/* ---------- Tab nav ---------- */
+.section-nav{
+  display:flex;gap:0;background:var(--teal-dark);padding:0 40px;
+  font-size:13.5px;font-weight:600;overflow-x:auto;
+}
+.tab-btn{
+  background:none;border:none;color:var(--teal-light);
+  padding:13px 22px;font-family:var(--font);font-size:13.5px;font-weight:600;
+  cursor:pointer;border-bottom:3px solid transparent;transition:all .15s ease;
+  white-space:nowrap;
+}
+.tab-btn:hover{color:var(--gold-light);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(255,255,255,.05);}
+
+/* ---------- Tab panels ---------- */
+.tab-panel{display:none;padding:24px 40px 30px;}
+.tab-panel.active{display:block;}
+
+/* ---------- Section head ---------- */
+.section-head{border-bottom:3px solid var(--gold);padding-bottom:12px;margin-bottom:18px;}
+.eyebrow{font-size:11.5px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:1px;}
+.section-head h2{font-size:22px;color:var(--teal);font-weight:700;margin-top:4px;}
+.section-head h2 .tag{
+  font-size:11.5px;background:var(--teal-light);color:var(--teal-dark);padding:3px 9px;
+  border-radius:12px;font-weight:700;vertical-align:middle;margin-left:8px;
+}
+.section-intro{font-size:13.8px;color:#3B4A50;max-width:920px;line-height:1.6;margin-top:8px;}
+
+/* ---------- Charts ---------- */
+.chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.chart-card{
+  background:var(--white);border:1px solid var(--card-border);border-radius:10px;
+  padding:16px 18px 12px;display:flex;flex-direction:column;
+}
+.chart-card.wide{grid-column:1 / -1;}
+.chart-card h3{font-size:14.5px;font-weight:700;color:var(--teal-dark);}
+.chart-note{font-size:11.5px;color:var(--gray);margin-top:5px;margin-bottom:10px;line-height:1.5;min-height:18px;}
+.chart-canvas-wrap{position:relative;height:300px;}
+.chart-canvas-wrap.tall{height:400px;}
+
+/* ---------- Healthcare KPI cards ---------- */
+.health-kpi-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px;}
+.health-kpi-card{
+  background:var(--white);border:1px solid var(--card-border);border-top:3px solid var(--gold);
+  border-radius:10px;padding:18px 20px;
+}
+.health-kpi-title{font-size:12px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;}
+.health-kpi-row{display:flex;gap:16px;flex-wrap:wrap;}
+.health-kpi-metric{flex:1;min-width:80px;}
+.health-kpi-metric .label{font-size:10px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.health-kpi-metric .value{font-size:18px;font-weight:800;color:var(--teal-dark);margin-top:2px;}
+.health-kpi-metric .value.small{font-size:15px;}
+
+/* ---------- Insight cards ---------- */
+.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.insight-card{
+  background:var(--white);border:1px solid var(--card-border);border-left:4px solid var(--teal);
+  border-radius:10px;padding:18px 22px;
+}
+.insight-card.gold{border-left-color:var(--gold);}
+.insight-card.highlight{border-left-color:#2E7D32;}
+.insight-title{font-size:13px;font-weight:700;color:var(--teal-dark);margin-bottom:6px;}
+.insight-body{font-size:12.5px;color:#3B4A50;line-height:1.6;}
+.insight-body b{color:var(--teal-dark);}
+
+/* ---------- Footer ---------- */
+footer{background:var(--teal-dark);color:#9FC6CA;text-align:center;font-size:11.5px;padding:14px;}
+
+@media (max-width:900px){
+  .chart-grid{grid-template-columns:1fr;}
+  .exec-strip{grid-template-columns:1fr;}
+  .insight-grid{grid-template-columns:1fr;}
+  .health-kpi-strip{grid-template-columns:1fr;}
+  .site-header{padding:0 18px 0 18px;gap:16px;height:68px;}
+  .site-header-logo{height:44px;}
+  .site-header-title{font-size:20px;}
+  .topbar,.section-nav,.tab-panel{padding-left:18px;padding-right:18px;}
+  .exec-strip{padding-left:18px;padding-right:18px;}
+  .country-nav-btn{font-size:11.5px;padding:7px 14px;}
+}
+
+/* ---------- UK additions ---------- */
+.exec-strip.four{grid-template-columns:repeat(4,1fr);}
+.exec-basis{font-size:10.5px;color:var(--gray);line-height:1.45;margin-top:10px;}
+.exec-basis a{color:var(--teal);font-weight:600;text-decoration:none;}
+.chart-sub{font-size:12.5px;color:#3B4A50;margin:4px 0 10px;line-height:1.5;}
+.chart-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  margin-top:10px;padding-top:8px;border-top:1px solid var(--card-border);}
+.chart-source{font-size:11px;color:var(--gray);line-height:1.5;}
+.chart-source a{color:var(--teal);text-decoration:none;font-weight:600;}
+.chart-source a:hover{text-decoration:underline;}
+.chart-actions{display:flex;gap:6px;}
+.dl-btn{font-family:var(--font);font-size:11px;font-weight:600;color:var(--teal);background:#F0F8F9;
+  border:1px solid var(--card-border);border-radius:6px;padding:4px 10px;cursor:pointer;}
+.dl-btn:hover{background:var(--teal);color:var(--white);}
+.dl-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.chart-more{margin-top:6px;}
+.chart-more summary{font-size:11px;color:var(--teal);font-weight:600;cursor:pointer;list-style:none;}
+.chart-more summary::-webkit-details-marker{display:none;}
+.chart-more summary::before{content:'+ ';}
+.chart-more[open] summary::before{content:'− ';}
+.chart-more .chart-note{margin:6px 0 0;min-height:0;}
+.callout{background:#FFF8E6;border:1px solid #F3DFA6;border-left:4px solid var(--gold);border-radius:10px;
+  padding:12px 16px;font-size:12.8px;color:#3B4A50;line-height:1.6;margin-bottom:16px;max-width:1100px;}
+.callout b{color:var(--teal-dark);}
+.notes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px;}
+.data-table-wrap{background:var(--white);border:1px solid var(--card-border);border-radius:10px;overflow-x:auto;}
+.data-table{border-collapse:collapse;width:100%;font-size:12.3px;min-width:720px;}
+.data-table th{background:#EEF6F7;color:var(--teal-dark);text-align:left;font-weight:700;padding:9px 12px;border-bottom:1px solid var(--card-border);}
+.data-table td{padding:9px 12px;border-bottom:1px solid var(--card-border);vertical-align:top;color:#2B393E;line-height:1.5;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table a{color:var(--teal);word-break:break-all;}
+.tab-panel h3.sub{font-size:16px;color:var(--teal);margin:22px 0 10px;}
+@media (max-width:1200px){ .exec-strip.four{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:900px){ .exec-strip.four{grid-template-columns:1fr;} .notes-grid{grid-template-columns:1fr;} }
+@media (max-width:600px){ .site-header{height:auto;min-height:68px;padding-top:8px;padding-bottom:8px;} .site-header-title{white-space:normal;font-size:16px;} .site-header-logo{height:38px;} }
+</style>
+<body>
+
+<div class="site-header">
+  <a href="index.html" style="display:flex; align-items:center; text-decoration:none;">
+    <img src="gati-logo.png" alt="GATI — Global Access to Talent from India" class="site-header-logo">
+  </a>
+  <span class="site-header-title">United Kingdom Country Dashboard</span>
+  <div class="country-nav" id="countryNav">
+    <button class="country-nav-btn" onclick="this.parentElement.classList.toggle('open')">Country Profiles</button>
+    <div class="country-nav-menu">
+      <a href="index.html" class="country-nav-item">
+        <span class="country-flag">🌐</span> Overview
+      </a>
+      <a href="japan.html" class="country-nav-item">
+        <span class="country-flag">🇯🇵</span> Japan
+      </a>
+      <a href="germany.html" class="country-nav-item">
+        <span class="country-flag">🇩🇪</span> Germany
+      </a>
+      <a href="uk.html" class="country-nav-item active">
+        <span class="country-flag">🇬🇧</span> United Kingdom
+      </a>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <span class="hero-flag">🇬🇧</span>
+  <div class="hero-text">
+    <h1>United Kingdom</h1>
+    <p class="subtitle">Indian population, long-term migration, visas, work visas, and India-trained nurses and doctors. Official data from the ONS, Home Office, OECD and the Nursing and Midwifery Council (NMC).</p>
+  </div>
+</header>
+
+<!-- ===== Executive KPI Strip ===== -->
+<div class="exec-strip four">
+  <div class="exec-card" id="exec-pop">
+    <div class="exec-card-header">
+      <span class="exec-card-title">Indian Population (Stock)</span>
+      <span class="exec-card-period" id="exec-pop-period">—</span>
+    </div>
+    <div class="exec-primary">
+      <span class="exec-primary-value" id="exec-pop-indian">—</span>
+      <span class="exec-primary-label">Indian nationals</span>
+    </div>
+    <div class="exec-cagr-wrap">
+      <div class="exec-cagr" id="exec-pop-cagr">CAGR —</div>
+      <div class="exec-cagr-period" id="exec-pop-cagr-period">—</div>
+    </div>
+    <div class="exec-secondary">
+      <div><div class="exec-metric-label">Total Foreign</div><div class="exec-metric-value" id="exec-pop-total">—</div></div>
+      <div><div class="exec-metric-label">India's Share</div><div class="exec-metric-value" id="exec-pop-share">—</div></div>
+    </div>
+    <p class="exec-basis" id="exec-pop-basis"></p>
+  </div>
+  <div class="exec-card" id="exec-arr">
+    <div class="exec-card-header">
+      <span class="exec-card-title">Indian Arrivals (Flow)</span>
+      <span class="exec-card-period" id="exec-arr-period">—</span>
+    </div>
+    <div class="exec-primary">
+      <span class="exec-primary-value" id="exec-arr-indian">—</span>
+      <span class="exec-primary-label">Indian nationals</span>
+    </div>
+    <div class="exec-cagr-wrap">
+      <div class="exec-cagr" id="exec-arr-cagr">CAGR —</div>
+      <div class="exec-cagr-period" id="exec-arr-cagr-period">—</div>
+    </div>
+    <div class="exec-secondary">
+      <div><div class="exec-metric-label">All Arrivals</div><div class="exec-metric-value" id="exec-arr-total">—</div></div>
+      <div><div class="exec-metric-label">India's Share</div><div class="exec-metric-value" id="exec-arr-share">—</div></div>
+    </div>
+    <p class="exec-basis" id="exec-arr-basis"></p>
+  </div>
+  <div class="exec-card" id="exec-work">
+    <div class="exec-card-header">
+      <span class="exec-card-title">Indian Work Visas (Flow)</span>
+      <span class="exec-card-period" id="exec-work-period">—</span>
+    </div>
+    <div class="exec-primary">
+      <span class="exec-primary-value" id="exec-work-indian">—</span>
+      <span class="exec-primary-label">Main applicants</span>
+    </div>
+    <div class="exec-cagr-wrap">
+      <div class="exec-cagr" id="exec-work-cagr">CAGR —</div>
+      <div class="exec-cagr-period" id="exec-work-cagr-period">—</div>
+    </div>
+    <div class="exec-secondary">
+      <div><div class="exec-metric-label">All Work Visas</div><div class="exec-metric-value" id="exec-work-total">—</div></div>
+      <div><div class="exec-metric-label">India's Share</div><div class="exec-metric-value" id="exec-work-share">—</div></div>
+    </div>
+    <p class="exec-basis" id="exec-work-basis"></p>
+  </div>
+  <div class="exec-card" id="exec-nurse">
+    <div class="exec-card-header">
+      <span class="exec-card-title">India-Trained Nurses (Stock)</span>
+      <span class="exec-card-period" id="exec-nurse-period">—</span>
+    </div>
+    <div class="exec-primary">
+      <span class="exec-primary-value" id="exec-nurse-indian">—</span>
+      <span class="exec-primary-label">Nurses</span>
+    </div>
+    <div class="exec-cagr-wrap">
+      <div class="exec-cagr" id="exec-nurse-cagr">CAGR —</div>
+      <div class="exec-cagr-period" id="exec-nurse-cagr-period">—</div>
+    </div>
+    <div class="exec-secondary">
+      <div><div class="exec-metric-label">Foreign-Trained</div><div class="exec-metric-value" id="exec-nurse-total">—</div></div>
+      <div><div class="exec-metric-label">India's Share</div><div class="exec-metric-value" id="exec-nurse-share">—</div></div>
+    </div>
+    <p class="exec-basis" id="exec-nurse-basis"></p>
+  </div>
+</div>
+
+<!-- ===== Tab Navigation ===== -->
+<nav class="section-nav" id="sectionNav">
+  <button class="tab-btn active" data-tab="population">Population</button>
+  <button class="tab-btn" data-tab="migration">Migration Flows</button>
+  <button class="tab-btn" data-tab="visas">Visas</button>
+  <button class="tab-btn" data-tab="employment">Employment</button>
+  <button class="tab-btn" data-tab="healthcare">Healthcare</button>
+  <button class="tab-btn" data-tab="insights">Key Insights</button>
+  <button class="tab-btn" data-tab="notes">Data Notes &amp; Sources</button>
+</nav>
+
+<main>
+  <!-- ================= POPULATION TAB ================= -->
+  <div class="tab-panel active" id="tab-population">
+    <div class="section-head">
+      <span class="eyebrow">Stock Data</span>
+      <h2>Indian &amp; Foreign Population in the UK <span class="tag">All purposes</span></h2>
+      <p class="section-intro">How many Indian nationals live in the UK at a point in time, for any reason (work, study, family). The UK has no population register, so the annual series is a survey estimate published by the OECD; the 2021 Census is the cross-check.</p>
+    </div>
+    <div class="callout" id="pop-callout"></div>
+    <div class="chart-grid">
+      <div class="chart-card" data-chart="indian-stock">
+        <h3>Indian Nationals in the UK — Trend</h3>
+        <p class="chart-sub" id="sub-uk-indian-stock"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-indian-stock"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-indian-stock"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="indian-stock" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="indian-stock" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-indian-stock"></p></details>
+      </div>
+      <div class="chart-card" data-chart="foreign-stock">
+        <h3>All Foreign Nationals in the UK — Trend</h3>
+        <p class="chart-sub" id="sub-uk-foreign-stock"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-foreign-stock"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-foreign-stock"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="foreign-stock" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="foreign-stock" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-foreign-stock"></p></details>
+      </div>
+      <div class="chart-card" data-chart="share-stock">
+        <h3>India's Share of Foreign Nationals — Trend</h3>
+        <p class="chart-sub" id="sub-uk-share-stock"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-share-stock"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-share-stock"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="share-stock" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="share-stock" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-share-stock"></p></details>
+      </div>
+      <div class="chart-card" data-chart="census">
+        <h3>Census 2011 &amp; 2021 — Passport vs Country of Birth</h3>
+        <p class="chart-sub" id="sub-uk-census"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-census"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-census"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="census" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="census" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-census"></p></details>
+      </div>
+      <div class="chart-card" data-chart="permits-indian">
+        <h3>Valid Residence Permits — Indian Citizens (Stock)</h3>
+        <p class="chart-sub" id="sub-uk-permits-indian"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-permits-indian"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-permits-indian"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="permits-indian" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="permits-indian" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-permits-indian"></p></details>
+      </div>
+      <div class="chart-card" data-chart="permits-noneu">
+        <h3>Valid Residence Permits — All Non-EU Citizens (Stock)</h3>
+        <p class="chart-sub" id="sub-uk-permits-noneu"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-permits-noneu"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-permits-noneu"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="permits-noneu" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="permits-noneu" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-permits-noneu"></p></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MIGRATION FLOWS TAB ================= -->
+  <div class="tab-panel" id="tab-migration">
+    <div class="section-head">
+      <span class="eyebrow">Flow Data</span>
+      <h2>Long-Term Migration Flows <span class="tag">ONS, calendar years</span></h2>
+      <p class="section-intro">People who move to or leave the UK for at least 12 months. Arrivals are counted directly, so they compare with the arrival counts used for Germany and South Korea. Net migration is arrivals minus departures.</p>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" data-chart="indian-flows">
+        <h3>Indian Nationals — Arrivals, Departures &amp; Net</h3>
+        <p class="chart-sub" id="sub-uk-indian-flows"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-indian-flows"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-indian-flows"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="indian-flows" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="indian-flows" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-indian-flows"></p></details>
+      </div>
+      <div class="chart-card" data-chart="all-flows">
+        <h3>All Nationalities — Arrivals, Departures &amp; Net</h3>
+        <p class="chart-sub" id="sub-uk-all-flows"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-all-flows"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-all-flows"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="all-flows" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="all-flows" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-all-flows"></p></details>
+      </div>
+      <div class="chart-card" data-chart="arr-reason">
+        <h3>Indian Arrivals by Main Reason</h3>
+        <p class="chart-sub" id="sub-uk-arr-reason"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-arr-reason"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-arr-reason"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="arr-reason" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="arr-reason" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-arr-reason"></p></details>
+      </div>
+      <div class="chart-card" data-chart="flow-share">
+        <h3>India's Share of Long-Term Arrivals and Departures</h3>
+        <p class="chart-sub" id="sub-uk-flow-share"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-flow-share"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-flow-share"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="flow-share" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="flow-share" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-flow-share"></p></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VISAS TAB ================= -->
+  <div class="tab-panel" id="tab-visas">
+    <div class="section-head">
+      <span class="eyebrow">Visa Data</span>
+      <h2>Visa Applications &amp; Issuance <span class="tag">Home Office, entry clearance</span></h2>
+      <p class="section-intro">Visas granted to Indian nationals before travelling to the UK, by route. A visa is permission to come; not everyone travels, and visitor visas are short stays. Use these to see demand and policy changes, and the ONS arrivals for people who actually moved.</p>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card wide" data-chart="visa-routes">
+        <h3>Visas Issued to Indian Nationals by Route</h3>
+        <p class="chart-sub" id="sub-uk-visa-routes"></p>
+        <div class="chart-canvas-wrap tall"><canvas id="chart-uk-visa-routes"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-visa-routes"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="visa-routes" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="visa-routes" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-visa-routes"></p></details>
+      </div>
+      <div class="chart-card" data-chart="visa-decisions">
+        <h3>Indian Visa Applications, Grants &amp; Refusal Rate</h3>
+        <p class="chart-sub" id="sub-uk-visa-decisions"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-visa-decisions"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-visa-decisions"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="visa-decisions" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="visa-decisions" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-visa-decisions"></p></details>
+      </div>
+      <div class="chart-card" data-chart="visa-share">
+        <h3>India's Share of All UK Visas Issued</h3>
+        <p class="chart-sub" id="sub-uk-visa-share"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-visa-share"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-visa-share"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="visa-share" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="visa-share" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-visa-share"></p></details>
+      </div>
+      <div class="chart-card wide" data-chart="visa-quarterly">
+        <h3>Indian Work &amp; Study Visas — Quarterly</h3>
+        <p class="chart-sub" id="sub-uk-visa-quarterly"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-visa-quarterly"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-visa-quarterly"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="visa-quarterly" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="visa-quarterly" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-visa-quarterly"></p></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= EMPLOYMENT TAB ================= -->
+  <div class="tab-panel" id="tab-employment">
+    <div class="section-head">
+      <span class="eyebrow">Labour Migration</span>
+      <h2>Work Visas <span class="tag">Home Office, main applicants</span></h2>
+      <p class="section-intro">The UK does not publish a reliable yearly count of employed Indian nationals, so this tab uses work visas granted to the worker (main applicant). This matches the first work-permit counts used for Italy, Spain, France and Poland on the overview page.</p>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" data-chart="work-indian">
+        <h3>Indian Work Visas (Main Applicants) — Trend</h3>
+        <p class="chart-sub" id="sub-uk-work-indian"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-indian"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-indian"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-indian" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-indian" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-indian"></p></details>
+      </div>
+      <div class="chart-card" data-chart="work-all">
+        <h3>All Work Visas (Main Applicants) — Trend</h3>
+        <p class="chart-sub" id="sub-uk-work-all"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-all"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-all"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-all" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-all" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-all"></p></details>
+      </div>
+      <div class="chart-card" data-chart="work-share">
+        <h3>India's Share of UK Work Visas</h3>
+        <p class="chart-sub" id="sub-uk-work-share"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-share"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-share"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-share" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-share" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-share"></p></details>
+      </div>
+      <div class="chart-card" data-chart="work-routes">
+        <h3>Indian Work Visas by Route (Main Applicants)</h3>
+        <p class="chart-sub" id="sub-uk-work-routes"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-routes"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-routes"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-routes" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-routes" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-routes"></p></details>
+      </div>
+      <div class="chart-card" data-chart="work-family">
+        <h3>Indian Work Visas — Workers vs Family Members</h3>
+        <p class="chart-sub" id="sub-uk-work-family"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-family"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-family"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-family" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-family" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-family"></p></details>
+      </div>
+      <div class="chart-card" data-chart="work-arrivals">
+        <h3>Work Visas vs Work-Related Arrivals (Indians)</h3>
+        <p class="chart-sub" id="sub-uk-work-arrivals"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-work-arrivals"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-work-arrivals"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="work-arrivals" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="work-arrivals" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-work-arrivals"></p></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HEALTHCARE TAB ================= -->
+  <div class="tab-panel" id="tab-healthcare">
+    <div class="section-head">
+      <span class="eyebrow">Healthcare Workforce</span>
+      <h2>India-Trained Nurses &amp; Doctors <span class="tag">OECD, NMC &amp; Home Office</span></h2>
+      <p class="section-intro">Nurses and doctors on the UK registers who qualified in India (counted by country of training, not passport), how many new India-trained nurses join each year, and Health and Care Worker visas.</p>
+    </div>
+    <div class="health-kpi-strip">
+      <div class="health-kpi-card" id="health-kpi-nurses">
+        <div class="health-kpi-title">India-Trained Nurses <span style="color:var(--gray); text-transform:none; font-weight:600; font-size:11px; float:right;" id="hk-nurse-year">—</span></div>
+        <div class="health-kpi-row">
+          <div class="health-kpi-metric"><div class="label">On the register</div><div class="value" id="hk-nurse-stock">—</div></div>
+          <div class="health-kpi-metric"><div class="label">Share of foreign-trained</div><div class="value small" id="hk-nurse-share">—</div></div>
+          <div class="health-kpi-metric"><div class="label">New joiners (latest year)</div><div class="value small" id="hk-nurse-join">—</div></div>
+        </div>
+      </div>
+      <div class="health-kpi-card" id="health-kpi-doctors">
+        <div class="health-kpi-title">India-Trained Doctors <span style="color:var(--gray); text-transform:none; font-weight:600; font-size:11px; float:right;" id="hk-doc-year">—</span></div>
+        <div class="health-kpi-row">
+          <div class="health-kpi-metric"><div class="label">On the register</div><div class="value" id="hk-doc-stock">—</div></div>
+          <div class="health-kpi-metric"><div class="label">Share of foreign-trained</div><div class="value small" id="hk-doc-share">—</div></div>
+          <div class="health-kpi-metric"><div class="label">Foreign-trained, all UK doctors</div><div class="value small" id="hk-doc-ftpct">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" data-chart="nurse-stock">
+        <h3>India-Trained vs All Foreign-Trained Nurses</h3>
+        <p class="chart-sub" id="sub-uk-nurse-stock"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-nurse-stock"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-nurse-stock"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="nurse-stock" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="nurse-stock" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-nurse-stock"></p></details>
+      </div>
+      <div class="chart-card" data-chart="health-share">
+        <h3>India's Share of Foreign-Trained Nurses &amp; Doctors</h3>
+        <p class="chart-sub" id="sub-uk-health-share"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-health-share"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-health-share"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="health-share" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="health-share" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-health-share"></p></details>
+      </div>
+      <div class="chart-card" data-chart="doc-stock">
+        <h3>India-Trained vs All Foreign-Trained Doctors</h3>
+        <p class="chart-sub" id="sub-uk-doc-stock"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-doc-stock"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-doc-stock"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="doc-stock" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="doc-stock" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-doc-stock"></p></details>
+      </div>
+      <div class="chart-card" data-chart="nmc-joiners">
+        <h3>New Nurses Joining the NMC Register — India vs All International</h3>
+        <p class="chart-sub" id="sub-uk-nmc-joiners"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-nmc-joiners"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-nmc-joiners"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="nmc-joiners" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="nmc-joiners" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-nmc-joiners"></p></details>
+      </div>
+      <div class="chart-card" data-chart="hcw-visas">
+        <h3>Health &amp; Care Worker Visas — Indian Nationals</h3>
+        <p class="chart-sub" id="sub-uk-hcw-visas"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-hcw-visas"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-hcw-visas"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="hcw-visas" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="hcw-visas" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-hcw-visas"></p></details>
+      </div>
+      <div class="chart-card" data-chart="nursing-rank">
+        <h3>Top Countries of Training — NMC Register (Sept 2024)</h3>
+        <p class="chart-sub" id="sub-uk-nursing-rank"></p>
+        <div class="chart-canvas-wrap"><canvas id="chart-uk-nursing-rank"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-source" id="src-uk-nursing-rank"></span>
+          <span class="chart-actions">
+            <button type="button" class="dl-btn" data-dl="png" data-chart="nursing-rank" title="Download this chart as an image, with its source">⬇ Image</button>
+            <button type="button" class="dl-btn" data-dl="csv" data-chart="nursing-rank" title="Download the numbers behind this chart, with its source">⬇ Data</button>
+          </span>
+        </div>
+        <details class="chart-more"><summary>About this data</summary><p class="chart-note" id="note-uk-nursing-rank"></p></details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INSIGHTS TAB ================= -->
+  <div class="tab-panel" id="tab-insights">
+    <div class="section-head">
+      <span class="eyebrow">Auto-generated Analysis</span>
+      <h2>Key Insights <span class="tag">Calculated from the data on this page</span></h2>
+      <p class="section-intro">Each statement below is written by the page from the numbers in the UK dataset, so it updates when the data file is updated.</p>
+    </div>
+    <div class="insight-grid" id="insight-grid">
+      <!-- Dynamically populated by uk-app.js -->
+    </div>
+  </div>
+
+  <!-- ================= DATA NOTES TAB ================= -->
+  <div class="tab-panel" id="tab-notes">
+    <div class="section-head">
+      <span class="eyebrow">Transparency</span>
+      <h2>Data Notes &amp; Sources <span class="tag">Read before comparing</span></h2>
+      <p class="section-intro">What each measure counts, where it comes from, and what it should not be compared with.</p>
+    </div>
+    <div class="notes-grid">
+      <div class="insight-card"><div class="insight-title">Stock vs flow</div><div class="insight-body">A <b>stock</b> is how many people are present at one moment (like a photo). A <b>flow</b> is how many moved during a year (like a video). Population and the nurse and doctor registers are stocks; arrivals and visas are flows.</div></div>
+      <div class="insight-card"><div class="insight-title">Nationality vs country of training</div><div class="insight-body">Population, arrivals and visas count <b>Indian nationals</b>. Nurse and doctor counts are by <b>country of training</b>: a British citizen who qualified in India is included, an Indian national trained in the UK is not.</div></div>
+      <div class="insight-card gold"><div class="insight-title">Series break in 2021</div><div class="insight-body">ONS long-term migration figures from 2021 use Home Office administrative data. Earlier figures came from a passenger survey and are not comparable, so arrivals start in 2021. ONS figures are provisional and rounded to the nearest 1,000.</div></div>
+      <div class="insight-card gold"><div class="insight-title">Every share uses one source</div><div class="insight-body">Each "India's share" divides an Indian figure by a total from the <b>same table, year and definition</b>. Visa shares use main applicants on both sides unless the chart says otherwise.</div></div>
+    </div>
+    <h3 class="sub">Measures used on this page</h3>
+    <div class="data-table-wrap"><table class="data-table" id="dict-table"></table></div>
+    <h3 class="sub">Sources</h3>
+    <div class="data-table-wrap"><table class="data-table" id="sources-table"></table></div>
+  </div>
+</main>
+
+<footer>GATI Foundation — United Kingdom Country Dashboard · v1</footer>
+
+<script>
+/* ================================================================
+   UK JSON Data Loader
+   ================================================================ */
+const UK_API_URL = 'DATASETS/UK/uk_data.json';
+/* ---------- Show / hide loading overlay ---------- */
+function showLoading() {
+  let overlay = document.getElementById('data-loading-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'data-loading-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(246,249,250,0.92);';
+    overlay.innerHTML = '<div style="text-align:center;font-family:Poppins,sans-serif;">'
+      + '<div style="width:48px;height:48px;border:4px solid #84D2E2;border-top-color:#006B76;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px;"></div>'
+      + '<div style="font-size:15px;font-weight:600;color:#006B76;">Loading United Kingdom dashboard data…</div>'
+      + '<style>@keyframes spin{to{transform:rotate(360deg)}}</style>'
+      + '</div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  const overlay = document.getElementById('data-loading-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function showError(msg) {
+  hideLoading();
+  let el = document.getElementById('data-error-banner');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'data-error-banner';
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#C0392B;color:#fff;padding:14px 24px;font-family:Poppins,sans-serif;font-size:13.5px;text-align:center;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+/* ---------- Main loader ---------- */
+async function loadUKData() {
+  showLoading();
+  try {
+    const resp = await fetch(UK_API_URL);
+    if (!resp.ok) throw new Error('Failed to load UK data (' + resp.status + ')');
+    const json = await resp.json();
+    processUKData(json);
+    hideLoading();
+    initUKDashboard();
+  } catch (err) {
+    console.error('UK data load error:', err);
+    showError('Unable to load UK data. Please check your connection and refresh. (' + err.message + ')');
+  }
+}
+
+/* Close country nav dropdown on outside click */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.country-nav')) {
+    document.querySelectorAll('.country-nav.open').forEach(n => n.classList.remove('open'));
+  }
+});
+</script>
+<script src="uk-app.js"></script>
+<script>
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadUKData);
+} else {
+  loadUKData();
+}
+</script>
+</body>
+</html>
