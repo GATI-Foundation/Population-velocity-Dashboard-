@@ -4,7 +4,7 @@
 
 Interactive data dashboard tracking Indian nationals living and working abroad across 10 countries, benchmarked against each country's total foreign-national numbers. Covers three pillars: all-purpose migration (population), employment, and healthcare (nurses). Built as a static HTML/CSS/JavaScript site. All data is stored as files in the `DATASETS/` folder of this repository.
 
-**Live dashboard:** https://velocitydashboard.netlify.app/
+**Live dashboard:** https://population-velocity-dashboard.vercel.app/
 
 **Repository:** https://github.com/Gayathri-KG29/Indians-Working-Abroad-
 
