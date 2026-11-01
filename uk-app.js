@@ -225,27 +225,29 @@ function fillExecCard(key, ind, tot, opts) {
     cagrEl.textContent = 'CAGR ' + fmtPctSigned(cagr);
     cagrEl.classList.toggle('negative', cagr < 0);
   }
-  setText('exec-' + key + '-cagr-period', '(' + first + '–' + latest + ')');
-  const b = document.getElementById('exec-' + key + '-basis');
-  if (b) b.innerHTML = opts.basis + ' · ' + sourceLinks(opts.src);
+  // The years and source go to the Data Notes tab, not on the card
+  KPI_INFO.push({ title: opts.title, unit: opts.unit, basis: opts.basis, src: opts.src,
+    latest, first, latestVal: ind[latest], firstVal: ind[first], cagr,
+    total: tot[latest], totalLabel: opts.totalLabel, share: ind[latest] / tot[latest] * 100 });
 }
 
+const KPI_INFO = [];   // filled by fillExecCard, shown in the Data Notes tab
 function renderExecKPIs() {
+  KPI_INFO.length = 0;
   fillExecCard('pop', series(UK.annual, 'POP_IN_OECD'), series(UK.annual, 'POP_ALL_OECD'), {
     window: 5, period: y => String(y), src: ['OECD_MIG'],
-    basis: 'Survey estimate, rounded. Census 2021 count: 369,000'
+    title: 'Indian population (stock)', unit: 'Indian nationals', totalLabel: 'all foreign nationals',
+    basis: 'Survey-based estimate, rounded. The 2021 Census counted 369,000 Indian passport holders in England & Wales.'
   });
-  fillExecCard('arr', series(UK.annual, 'FLOW_IN_ARR'), series(UK.annual, 'FLOW_ALL_ARR'), {
-    period: y => 'Jan–Dec ' + y,
-    src: ['ONS_LTIM'], basis: 'Moved for 12+ months'
-  });
-  fillExecCard('work', series(UK.employment, 'EMP_IN_MAIN'), series(UK.employment, 'EMP_ALL_MAIN'), {
-    from: 2021, period: y => 'Jan–Dec ' + y,
-    src: ['HO_VISA'], basis: 'Workers only, family excluded'
+  fillExecCard('work', series(UK.annual, 'FLOW_IN_ARR_WORK'), series(UK.annual, 'FLOW_IN_ARR'), {
+    window: 5, period: y => 'Jan–Dec ' + y, src: ['ONS_LTIM'],
+    title: 'Indians arriving for work (flow)', unit: 'Indian nationals moving for 12+ months', totalLabel: 'all Indian arrivals',
+    basis: 'Main reason for coming is work, based on the visa held. Family members who came with a worker are counted here too. The share is out of all Indian long-term arrivals (study, work and other).'
   });
   fillExecCard('nurse', series(UK.healthcare, 'HC_NUR_IN'), series(UK.healthcare, 'HC_NUR_FT'), {
-    window: 5, period: y => String(y),
-    src: ['OECD_HW'], basis: 'By country of training'
+    window: 5, period: y => String(y), src: ['OECD_HW'],
+    title: 'India-trained nurses (stock)', unit: 'nurses', totalLabel: 'all foreign-trained nurses',
+    basis: 'Counted by country of training, not nationality.'
   });
 }
 
@@ -260,7 +262,7 @@ function renderPopulationCharts() {
 
   const callout = document.getElementById('pop-callout');
   if (callout) callout.innerHTML =
-    '<b>Read with care:</b> the UK has no population register, so these yearly numbers are a <b>survey estimate</b>. ' +
+    '<b>Read with care:</b> these yearly numbers are a <b>survey estimate</b>. ' +
     'Recent years repeat 370,000 and 2020 is missing, so treat them as approximate. The 2021 Census count (<b>369,000</b> Indian passport holders in England &amp; Wales) agrees closely.';
 
   setNote('note-uk-indian-stock', 'Indian nationals living in the UK, annual estimate. Gaps mean no figure was published. Source: OECD International Migration Database (UK source: ONS Annual Population Survey).');
@@ -528,7 +530,6 @@ function renderHealthcareCharts() {
   const nIn = series(UK.healthcare, 'HC_NUR_IN'), nFt = series(UK.healthcare, 'HC_NUR_FT');
   const dIn = series(UK.healthcare, 'HC_DOC_IN'), dFt = series(UK.healthcare, 'HC_DOC_FT');
   const jIn = series(UK.healthcare, 'HC_NMC_JOIN_IN'), jAll = series(UK.healthcare, 'HC_NMC_JOIN_INTL');
-  const dPct = series(UK.healthcare, 'HC_DOC_FT_PCT');
 
   // KPI cards
   const nY = yearsOf(nIn).filter(y => nFt[y]).pop();
@@ -544,7 +545,6 @@ function renderHealthcareCharts() {
     setText('hk-doc-year', String(dY));
     setText('hk-doc-stock', fmtNum(dIn[dY]));
     setText('hk-doc-share', fmtPct(dIn[dY] / dFt[dY] * 100));
-    if (dPct[dY] !== undefined) setText('hk-doc-ftpct', fmtPct(dPct[dY] * 100));
   }
 
   const ny = unionYears([nIn, nFt]);
@@ -722,6 +722,16 @@ function linkify(s) {
   return e.replace(/(https?:\/\/[^\s)]+)/g, '<a href="$1" target="_blank" rel="noopener">link</a>');
 }
 function renderNotes() {
+  const kpi = document.getElementById('kpi-table');
+  if (kpi) {
+    kpi.innerHTML = '<thead><tr><th>Top card</th><th>Number shown</th><th>Share</th><th>Growth (CAGR) and its years</th><th>Who is counted</th><th>Source</th></tr></thead><tbody>' +
+      KPI_INFO.map(k => `<tr><td>${escapeHtml(k.title)}</td>` +
+        `<td>${fmtNum(k.latestVal)} ${escapeHtml(k.unit)} in ${k.latest}</td>` +
+        `<td>${fmtPct(k.share)} of ${fmtNum(k.total)} ${escapeHtml(k.totalLabel)}</td>` +
+        `<td>${k.cagr === null ? '—' : fmtPctSigned(k.cagr) + ' a year'}, from ${fmtNum(k.firstVal)} in ${k.first} to ${fmtNum(k.latestVal)} in ${k.latest}. CAGR is the steady yearly change that would take the first number to the last one over these ${k.latest - k.first} years.</td>` +
+        `<td>${escapeHtml(k.basis)}</td>` +
+        `<td>${sourceLinks(k.src).replace(/^Source: /, '')}</td></tr>`).join('') + '</tbody>';
+  }
   const dict = document.getElementById('dict-table');
   if (dict) {
     const cols = ['Metric Name', 'Plain-language meaning', 'Basis (who is counted)', 'Reference period', 'Source organisation'];
